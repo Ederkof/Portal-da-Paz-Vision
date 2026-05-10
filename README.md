@@ -6,3 +6,5 @@ Chamado para a Comunidade Open Source:
 Estou em busca de mentes que saibam transformar esse 'suco natural' em código. Pessoas que entendam de óptica, AR (Realidade Aumentada), Bio-hacking e redes descentralizadas.
 Não quero vender um produto. Quero plantar uma árvore imponente chamada Vida. Se você sente essa frequência, entre em contato. Vamos construir o Portal da Paz de forma livre e aberta.
 #Agroecology #OpenSource #SpatialComputing #BioDesign #PortalDaPaz #EderGardenHouse
+
+https://youtube.com/@eder_garden_house?si=WfCIdk9lbARWKFNf
