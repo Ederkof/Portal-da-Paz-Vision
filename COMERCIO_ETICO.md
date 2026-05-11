@@ -1,0 +1,1 @@
+"Procuramos mentes que queiram destruir o 'prazos e gatilhos mentais'. No Portal da Paz, o comércio é um ato de consciência. Queremos codificar um validador de intenção por voz: o usuário declara seu propósito, e a rede julga a harmonia da sua honestidade antes de abrir o checkout."
