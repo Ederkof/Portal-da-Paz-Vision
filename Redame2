@@ -1,0 +1,11 @@
+## 🚀 O Desafio Técnico: MVP 3D Interativo
+
+Estamos buscando um Dev Master em 3D Web para dar vida à interface da Rede Universal de Harmonia. O objetivo inicial é criar uma cena funcional utilizando **Three.js** ou **React Three Fiber**.
+
+### Requisitos do Protótipo:
+1. **Estrutura Biológica 3D:** Renderização de uma dupla hélice de DNA interativa (órbita, zoom e rotação suave) com ramificações de nós (network nodes).
+2. **Sinal de Vida (Código Morse):** Implementar um efeito de pulsação luminosa (Glow Shader) em nós selecionados, transmitindo a mensagem "Estou aqui" em código Morse (`•` e `–`).
+3. **Interatividade (Raycasting):** Ao clicar em um nó ativo, a câmera deve fazer um leve foco (tweening) e abrir um elemento de interface (DOM overlay) com um texto estático simulando o "Portal de Conversa".
+4. **Visão de Futuro:** O projeto visa escalabilidade para WebXR (Realidade Aumentada/Virtual), pensando em integrações futuras com dispositivos vestíveis (smart glasses para atletas e exploradores em tempo real).
+
+Se você domina WebGL, Shaders, animações fluidas e quer construir uma rede social disruptiva e agroecológica, abra uma Issue ou envie um Pull Request!
