@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rede Universal de Harmonia - Plataforma Conexão</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #00e5ff;
+            --primary-dark: #00b3cc;
+            --secondary: #ff007f;
+            --dark: #0b131a;
+            --gray: #8899aa;
+            --white: #f0f8ff;
+            --glass: rgba(11, 19, 26, 0.85);
+            --radius: 16px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: var(--white);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 14px 24px;
+            background: rgba(11, 19, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--white);
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        .logo i {
+            font-size: 1.6rem;
+            color: var(--primary);
+            filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.3));
+            animation: pulse-icon 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--gray);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--white);
+        }
+
+        .btn-nav {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--dark) !important;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 229, 255, 0.3);
+        }
+
+        /* 3D Canvas */
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-overlay {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .hero-overlay h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--white) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        .hero-overlay p {
+            color: var(--gray);
+            font-size: 1rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        /* Info Card */
+        #info-card {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            padding: 24px 32px;
+            border-radius: var(--radius);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.15);
+            display: none;
+            max-width: 440px;
+            width: 90%;
+            text-align: center;
+            animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        #info-card .user-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+
+        #info-card .user-freq {
+            font-size: 0.8rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        #info-card .user-msg {
+            color: var(--gray);
+            font-size: 0.9rem;
+            padding: 12px;
+            background: rgba(0, 229, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+            text-align: left;
+            margin-bottom: 12px;
+        }
+
+        #info-card .user-msg strong {
+            color: var(--primary);
+        }
+
+        .btn-close-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            padding: 8px 24px;
+            border-radius: 50px;
+            color: var(--dark);
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.85rem;
+        }
+
+        .btn-close-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 229, 255, 0.3);
+        }
+
+        /* Instrução */
+        #instrucao {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            color: var(--gray);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            pointer-events: none;
+            animation: fadeInOut 3s ease-in-out infinite;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
+        }
+
+        #instrucao i {
+            color: var(--primary);
+            margin-right: 8px;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-overlay h1 { font-size: 1.6rem; }
+            .hero-overlay p { font-size: 0.8rem; }
+            #info-card { padding: 18px 20px; bottom: 60px; max-width: 95%; }
+            #info-card .user-msg { font-size: 0.8rem; padding: 10px; }
+            .nav-links { display: none; }
+            .logo { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-dna"></i>
+            <span>Rede Universal</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#">Sobre</a></li>
+            <li><a href="#">Recursos</a></li>
+            <li><a href="#" class="btn-nav">Conectar</a></li>
+        </ul>
+    </header>
+
+    <!-- 3D Canvas -->
+    <div id="three-canvas"></div>
+
+    <div class="hero-overlay">
+        <h1>Rede Universal de Harmonia</h1>
+        <p>Conectando mentes através da biologia quântica</p>
+    </div>
+
+    <!-- Info Card -->
+    <div id="info-card">
+        <div class="user-name" id="userName">@cultivador_sensivel</div>
+        <div class="user-freq" id="userFreq">🌊 Frequência: Bem-Estar e Socialismo</div>
+        <div class="user-msg" id="userMsg">
+            <strong>@cultivador_sensivel:</strong> Como podemos integrar mais arte no nosso cultivo social?
+        </div>
+        <button class="btn-close-card" onclick="fecharCard()">
+            <i class="fas fa-times"></i> Fechar Portal
+        </button>
+    </div>
+
+    <div id="instrucao">
+        <i class="fas fa-hand-pointer"></i> Clique nos pontos de luz para entrar no portal
+    </div>
+
+    <!-- THREE.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        // ============================================
+        // USUÁRIOS
+        // ============================================
+        const usuarios = [
+            { nome: '@cultivador_sensivel', freq: 'Bem-Estar e Socialismo', msg: 'Como podemos integrar mais arte no nosso cultivo social?' },
+            { nome: '@ader_garden_house', freq: 'Harmonia e Cultivo Social', msg: 'A terra está vibrante hoje! Vamos plantar mais árvores frutíferas.' },
+            { nome: '@bia_arquiteto', freq: 'Arte e Cultura', msg: 'Projetando um espaço cultural com materiais reciclados na periferia.' },
+            { nome: '@she_arquitsto', freq: 'Inovação e Bem-Estar', msg: 'Que tal criarmos uma galeria de arte imersiva com projeções?' },
+            { nome: '@eder_garden_house', freq: 'Cultivo e Música', msg: '#reggae vibrando alto hoje! A música cura a alma.' },
+            { nome: '@maria_cultural', freq: 'Arte e Educação', msg: 'Vamos levar arte para as escolas públicas!' },
+            { nome: '@joao_biodiverso', freq: 'Ecologia e Sustentabilidade', msg: 'A biodiversidade é a chave para um futuro saudável.' },
+            { nome: '@ana_tecno', freq: 'Tecnologia Social', msg: 'Desenvolvendo um app para mapear hortas comunitárias.' }
+        ];
+
+        // ============================================
+        // THREE.JS
+        // ============================================
+        const container = document.getElementById('three-canvas');
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        camera.position.z = 12;
+
+        // ============================================
+        // PONTOS (USUÁRIOS)
+        // ============================================
+        const numPontos = usuarios.length;
+        const posicoes = [];
+        const cores = [
+            [0, 0.9, 1], [1, 0.4, 0.8], [0.8, 0.4, 1], [0.2, 1, 0.6],
+            [1, 0.8, 0.2], [0.4, 0.8, 1], [1, 0.6, 0.4], [0.6, 1, 0.4]
+        ];
+
+        const geometria = new THREE.BufferGeometry();
+        const posArray = new Float32Array(numPontos * 3);
+        const corArray = new Float32Array(numPontos * 3);
+        const posArrayObj = [];
+
+        for (let i = 0; i < numPontos; i++) {
+            const theta = Math.random() * 2 * Math.PI;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const r = 3.5 + Math.random() * 1.5;
+
+            const x = r * Math.sin(phi) * Math.cos(theta);
+            const y = r * Math.sin(phi) * Math.sin(theta);
+            const z = r * Math.cos(phi);
+
+            posArray[i*3] = x;
+            posArray[i*3+1] = y;
+            posArray[i*3+2] = z;
+            posArrayObj.push({x, y, z});
+
+            const cor = cores[i % cores.length];
+            corArray[i*3] = cor[0];
+            corArray[i*3+1] = cor[1];
+            corArray[i*3+2] = cor[2];
+        }
+
+        geometria.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        geometria.setAttribute('color', new THREE.BufferAttribute(corArray, 3));
+
+        const material = new THREE.PointsMaterial({
+            size: 0.5,
+            transparent: true,
+            opacity: 0.9,
+            vertexColors: true,
+            blending: THREE.AdditiveBlending,
+            sizeAttenuation: true
+        });
+
+        const pontos = new THREE.Points(geometria, material);
+        scene.add(pontos);
+
+        // ============================================
+        // LINHAS DO GLOBO
+        // ============================================
+        const distMax = 2.8;
+        const linhasVerts = [];
+        const linhasCores = [];
+
+        for (let i = 0; i < numPontos; i++) {
+            for (let j = i + 1; j < numPontos; j++) {
+                const dx = posArrayObj[i].x - posArrayObj[j].x;
+                const dy = posArrayObj[i].y - posArrayObj[j].y;
+                const dz = posArrayObj[i].z - posArrayObj[j].z;
+                const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+
+                if (dist < distMax) {
+                    const p1 = posArrayObj[i];
+                    const p2 = posArrayObj[j];
+                    linhasVerts.push(p1.x, p1.y, p1.z);
+                    linhasVerts.push(p2.x, p2.y, p2.z);
+
+                    const alpha = 1 - (dist / distMax);
+                    const cor1 = cores[i % cores.length];
+                    const cor2 = cores[j % cores.length];
+                    
+                    for (let k = 0; k < 2; k++) {
+                        const mix = k === 0 ? 1 : 0;
+                        linhasCores.push(
+                            (cor1[0] * mix + cor2[0] * (1 - mix)) * alpha * 0.8,
+                            (cor1[1] * mix + cor2[1] * (1 - mix)) * alpha * 0.8,
+                            (cor1[2] * mix + cor2[2] * (1 - mix)) * alpha * 0.8
+                        );
+                    }
+                }
+            }
+        }
+
+        const geoLinhas = new THREE.BufferGeometry();
+        geoLinhas.setAttribute('position', new THREE.Float32BufferAttribute(linhasVerts, 3));
+        geoLinhas.setAttribute('color', new THREE.Float32BufferAttribute(linhasCores, 3));
+
+        const matLinhas = new THREE.LineBasicMaterial({
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.3,
+            blending: THREE.AdditiveBlending
+        });
+
+        const linhasGlobo = new THREE.LineSegments(geoLinhas, matLinhas);
+        scene.add(linhasGlobo);
+
+        // ============================================
+        // DNA
+        // ============================================
+        const grupoDNA = new THREE.Group();
+        const totalDNA = 50;
+        const raioDNA = 1.8;
+        const compDNA = 7;
+
+        const matA = new THREE.MeshBasicMaterial({ color: 0x00e5ff });
+        const matB = new THREE.MeshBasicMaterial({ color: 0xff007f });
+        const esfera = new THREE.SphereGeometry(0.08, 10, 10);
+
+        for (let i = 0; i < totalDNA; i++) {
+            const t = (i / totalDNA) * compDNA - (compDNA / 2);
+            const ang = (i / totalDNA) * Math.PI * 3;
+
+            const pA = new THREE.Mesh(esfera, matA);
+            pA.position.set(raioDNA * Math.cos(ang), t, raioDNA * Math.sin(ang));
+            grupoDNA.add(pA);
+
+            const pB = new THREE.Mesh(esfera, matB);
+            pB.position.set(raioDNA * Math.cos(ang + Math.PI), t, raioDNA * Math.sin(ang + Math.PI));
+            grupoDNA.add(pB);
+
+            if (i % 2 === 0) {
+                const geo = new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(raioDNA * Math.cos(ang), t, raioDNA * Math.sin(ang)),
+                    new THREE.Vector3(raioDNA * Math.cos(ang + Math.PI), t, raioDNA * Math.sin(ang + Math.PI))
+                ]);
+                const linha = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.15 }));
+                grupoDNA.add(linha);
+            }
+        }
+
+        grupoDNA.scale.set(0, 0, 0);
+        scene.add(grupoDNA);
+
+        // ============================================
+        // PARTÍCULAS DE FUNDO
+        // ============================================
+        const fundoGeo = new THREE.BufferGeometry();
+        const fundoCount = 500;
+        const fundoPos = new Float32Array(fundoCount * 3);
+        for (let i = 0; i < fundoCount * 3; i++) {
+            fundoPos[i] = (Math.random() - 0.5) * 40;
+        }
+        fundoGeo.setAttribute('position', new THREE.BufferAttribute(fundoPos, 3));
+        const fundoMat = new THREE.PointsMaterial({
+            color: 0x4466aa,
+            size: 0.03,
+            transparent: true,
+            opacity: 0.3,
+            blending: THREE.AdditiveBlending
+        });
+        const fundo = new THREE.Points(fundoGeo, fundoMat);
+        scene.add(fundo);
+
+        // ============================================
+        // ANIMAÇÃO
+        // ============================================
+        let emZoom = false;
+        let alvoZ = 12;
+        let tempo = 0;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            tempo += 0.008;
+
+            pontos.rotation.y += 0.002;
+            linhasGlobo.rotation.y += 0.002;
+            grupoDNA.rotation.y += 0.002;
+
+            material.size = 0.4 + Math.abs(Math.sin(tempo * 2)) * 0.2;
+            material.opacity = 0.6 + Math.sin(tempo * 1.5) * 0.4;
+
+            if (emZoom) {
+                grupoDNA.scale.x += (0.4 - grupoDNA.scale.x) * 0.03;
+                grupoDNA.scale.y += (0.4 - grupoDNA.scale.y) * 0.03;
+                grupoDNA.scale.z += (0.4 - grupoDNA.scale.z) * 0.03;
+            } else {
+                grupoDNA.scale.x += (0 - grupoDNA.scale.x) * 0.05;
+                grupoDNA.scale.y += (0 - grupoDNA.scale.y) * 0.05;
+                grupoDNA.scale.z += (0 - grupoDNA.scale.z) * 0.05;
+            }
+
+            camera.position.z += (alvoZ - camera.position.z) * 0.05;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // ============================================
+        // INTERAÇÃO
+        // ============================================
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        renderer.domElement.addEventListener('click', function(event) {
+            if (emZoom) return;
+
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            raycaster.params.Points.threshold = 0.4;
+
+            const intersects = raycaster.intersectObject(pontos);
+
+            if (intersects.length > 0) {
+                const index = intersects[0].index;
+                const user = usuarios[index];
+
+                document.getElementById('userName').textContent = user.nome;
+                document.getElementById('userFreq').textContent = '🌊 Frequência: ' + user.freq;
+                document.getElementById('userMsg').innerHTML = '<strong>' + user.nome + ':</strong> ' + user.msg;
+
+                emZoom = true;
+                alvoZ = 5;
+                document.getElementById('instrucao').style.display = 'none';
+
+                setTimeout(() => {
+                    document.getElementById('info-card').style.display = 'block';
+                }, 600);
+            }
+        });
+
+        // ============================================
+        // FECHAR CARD
+        // ============================================
+        function fecharCard() {
+            document.getElementById('info-card').style.display = 'none';
+            emZoom = false;
+            alvoZ = 12;
+            setTimeout(() => {
+                document.getElementById('instrucao').style.display = 'block';
+            }, 800);
+        }
+
+        window.fecharCard = fecharCard;
+
+        // ============================================
+        // RESPONSIVO
+        // ============================================
+        window.addEventListener('resize', function() {
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        });
+    </script>
+</body>
+</html>
