@@ -5,58 +5,222 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rede Universal de Harmonia - Protótipo 3D</title>
     <style>
-        body { margin: 0; overflow: hidden; background-color: #0b131a; }
+        body { margin: 0; overflow: hidden; background-color: #0b131a; font-family: sans-serif; }
         canvas { display: block; }
         #info-card {
             position: absolute; top: 20px; left: 20px;
-            background: rgba(15, 32, 39, 0.85); color: #e0f2f1;
-            padding: 20px; border-radius: 12px; font-family: sans-serif;
+            background: rgba(15, 32, 39, 0.9); color: #e0f2f1;
+            padding: 20px; border-radius: 12px;
             border: 1px solid #00e5ff; display: none; max-width: 300px;
-            box-shadow: 0 0 15px rgba(0,229,255,0.3);
+            box-shadow: 0 0 15px rgba(0,229,255,0.4);
+            z-index: 10;
+        }
+        #info-card h3 { margin-top: 0; color: #00e5ff; }
+        #info-card button {
+            background: #00e5ff; border: none; padding: 8px 12px; 
+            border-radius: 4px; color: #0b131a; cursor: pointer; font-weight: bold;
+        }
+        #info-card button:hover { background: #00b3cc; }
+        #instrucao {
+            position: absolute; bottom: 20px; width: 100%; 
+            text-align: center; color: #00e5ff; font-size: 14px;
+            pointer-events: none; text-shadow: 0 0 5px #000;
         }
     </style>
 </head>
 <body>
 
-    <div id="#info-card">
+    <div id="info-card">
         <h3>Portal de Conversa</h3>
         <p><strong>@cultivador_sensivel:</strong> Conectado em tempo real via hélice biológica.</p>
-        <button onclick="document.getElementById('#info-card').style.display='none'">Fechar</button>
+        <button onclick="fecharCard()">Fechar / Voltar</button>
     </div>
+
+    <div id="instrucao">Clique em um dos pontos de luz para entrar no portal</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
-        // 1. Criando o Cenário (Cena, Câmera e Renderizador)
+        // 1. Configuração Básica do Cenário
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // 2. Criando um objeto para representar o nó central da rede
-        const geometry = new THREE.SphereGeometry(1.5, 32, 32);
-        const material = new THREE.MeshBasicMaterial({ color: 0x00e5ff, wireframe: true });
-        const node = new THREE.Mesh(geometry, material);
-        scene.add(node);
+        camera.position.z = 12;
 
-        camera.position.z = 5;
+        // --- SISTEMA DE PONTOS DE LUZ PISCANDO ---
+        const quantidadePontos = 40;
+        const geometriaPontos = new THREE.BufferGeometry();
+        const posicoes = new Float32Array(quantidadePontos * 3);
 
-        // 3. Animação (Fazer o objeto girar para simular a dinâmica)
+        // Espalha os pontos em uma esfera imaginária
+        for(let i = 0; i < quantidadePontos; i++) {
+            const u = Math.random();
+            const v = Math.random();
+            const theta = u * 2.0 * Math.PI;
+            const phi = Math.acos(2.0 * v - 1.0);
+            const r = 3 + Math.random() * 2; // raio entre 3 e 5
+
+            posicoes[i*3] = r * Math.sin(phi) * Math.cos(theta);
+            posicoes[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+            posicoes[i*3+2] = r * Math.cos(phi);
+        }
+
+        geometriaPontos.setAttribute('position', new THREE.BufferAttribute(posicoes, 3));
+
+        // Material personalizado para os pontos brilharem e piscarem
+        const materialPontos = new THREE.PointsMaterial({
+            color: 0x00e5ff,
+            size: 0.4,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+
+        const nuvemPontos = new THREE.Points(geometriaPontos, materialPontos);
+        scene.add(nuvemPontos);
+
+
+        // --- ESTRUTURA DA REDE EM FORMATO DE DNA ---
+        const grupoDNA = new THREE.Group();
+        const totalPontosDNA = 60;
+        const raioDNA = 1.5;
+        const comprimentoDNA = 8;
+
+        const materialFitaA = new THREE.MeshBasicMaterial({ color: 0x00e5ff });
+        const materialFitaB = new THREE.MeshBasicMaterial({ color: 0xff007f }); // Cor rosa para contraste
+        const esferaGeo = new THREE.SphereGeometry(0.12, 16, 16);
+
+        for (let i = 0; i < totalPontosDNA; i++) {
+            const t = (i / totalPontosDNA) * comprimentoDNA - (comprimentoDNA / 2);
+            const angulo = (i / totalPontosDNA) * Math.PI * 4; // 2 voltas completas
+
+            // Fita A
+            const xA = raioDNA * Math.cos(angulo);
+            const yA = t;
+            const zA = raioDNA * Math.sin(angulo);
+            const noA = new THREE.Mesh(esferaGeo, materialFitaA);
+            noA.position.set(xA, yA, zA);
+            grupoDNA.add(noA);
+
+            // Fita B (Invertida em 180 graus / Math.PI)
+            const xB = raioDNA * Math.cos(angulo + Math.PI);
+            const yB = t;
+            const zB = raioDNA * Math.sin(angulo + Math.PI);
+            const noB = new THREE.Mesh(esferaGeo, materialFitaB);
+            noB.position.set(xB, yB, zB);
+            grupoDNA.add(noB);
+
+            // Degraus conectando as duas fitas (a cada 2 passos)
+            if (i % 2 === 0) {
+                const caminhoDegrau = new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(xA, yA, zA),
+                    new THREE.Vector3(xB, yB, zB)
+                ]);
+                const materialLinha = new THREE.LineBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.3 });
+                const degrau = new THREE.Line(caminhoDegrau, materialLinha);
+                grupoDNA.add(degrau);
+            }
+        }
+
+        // Esconde o DNA no início (ele só surge no zoom)
+        grupoDNA.scale.set(0, 0, 0);
+        scene.add(grupoDNA);
+
+
+        // --- CONTROLE DE ANIMAÇÃO E ESTADOS ---
+        let emModoZoom = false;
+        let alvoZCamera = 12;
+        let tempo = 0;
+
         function animate() {
             requestAnimationFrame(animate);
-            node.rotation.x += 0.005;
-            node.rotation.y += 0.01;
+            tempo += 0.05;
+
+            // Rotação suave dos elementos
+            if (!emModoZoom) {
+                nuvemPontos.rotation.y += 0.003;
+                nuvemPontos.rotation.x += 0.001;
+            } else {
+                grupoDNA.rotation.y += 0.02;
+            }
+
+            // Efeito de piscar nos pontos (modulando a opacidade)
+            materialPontos.opacity = 0.5 + Math.sin(tempo * 2) * 0.4;
+            materialPontos.size = 0.3 + Math.abs(Math.sin(tempo)) * 0.2;
+
+            // Suavização do movimento de Zoom da Câmera (Interpolação Linear)
+            camera.position.z += (alvoZCamera - camera.position.z) * 0.05;
+
+            // Transição de escala do DNA e sumiço dos pontos externos
+            if (emModoZoom) {
+                grupoDNA.scale.x += (1 - grupoDNA.scale.x) * 0.05;
+                grupoDNA.scale.y += (1 - grupoDNA.scale.y) * 0.05;
+                grupoDNA.scale.z += (1 - grupoDNA.scale.z) * 0.05;
+
+                nuvemPontos.scale.x += (0 - nuvemPontos.scale.x) * 0.05;
+                nuvemPontos.scale.y += (0 - nuvemPontos.scale.y) * 0.05;
+                nuvemPontos.scale.z += (0 - nuvemPontos.scale.z) * 0.05;
+            } else {
+                grupoDNA.scale.x += (0 - grupoDNA.scale.x) * 0.08;
+                grupoDNA.scale.y += (0 - grupoDNA.scale.y) * 0.08;
+                grupoDNA.scale.z += (0 - grupoDNA.scale.z) * 0.08;
+
+                nuvemPontos.scale.x += (1 - nuvemPontos.scale.x) * 0.05;
+                nuvemPontos.scale.y += (1 - nuvemPontos.scale.y) * 0.05;
+                nuvemPontos.scale.z += (1 - nuvemPontos.scale.z) * 0.05;
+            }
+
             renderer.render(scene, camera);
         }
         animate();
 
-        // 4. Simulação do Clique (Temporário: Abre o card após 3 segundos para testar)
-        setTimeout(() => {
-            document.getElementById('#info-card').style.display = 'block';
-        }, 3000);
 
-        // Ajustar tamanho se a tela mudar (ex: girar o celular)
+        // --- INTERAÇÃO DE CLIQUE (RAYCASTER) ---
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        window.addEventListener('click', (evento) => {
+            // Se já estiver no modo zoom, ignora novos cliques nos pontos
+            if (emModoZoom) return;
+
+            // Converte a posição do clique do mouse para coordenadas do Three.js
+            mouse.x = (evento.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(evento.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            
+            // Aumenta a margem de precisão para conseguir clicar com facilidade
+            raycaster.params.Points.threshold = 0.5; 
+
+            const interseccoes = raycaster.intersectObject(nuvemPontos);
+
+            if (interseccoes.length > 0) {
+                // Ativa a transição de zoom e revela o DNA
+                emModoZoom = true;
+                alvoZCamera = 5; // Câmera se aproxima
+                
+                document.getElementById('instrucao').style.display = 'none';
+                
+                // Exibe o painel lateral com atraso charmoso
+                setTimeout(() => {
+                    if(emModoZoom) document.getElementById('info-card').style.display = 'block';
+                }, 800);
+            }
+        });
+
+        function fecharCard() {
+            document.getElementById('info-card').style.display = 'none';
+            emModoZoom = false;
+            alvoZCamera = 12; // Câmera se afasta de volta
+            setTimeout(() => {
+                if(!emModoZoom) document.getElementById('instrucao').style.display = 'block';
+            }, 1000);
+        }
+
+        // Ajuste de tela responsivo
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
